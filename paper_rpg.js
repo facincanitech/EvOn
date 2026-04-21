@@ -433,8 +433,7 @@ function gameLoop(timestamp) {
 
     if (player.hp <= 0) {
         game.isGameOver = true;
-        document.getElementById('final-level').innerText = game.level;
-        document.getElementById('game-over-screen').classList.remove('hidden');
+        location.reload();
         return;
     }
 
