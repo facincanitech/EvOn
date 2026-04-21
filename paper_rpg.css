@@ -8,6 +8,10 @@
     --hp-color: #ff6b6b;
 }
 
+.hidden {
+    display: none !important;
+}
+
 * {
     margin: 0;
     padding: 0;
