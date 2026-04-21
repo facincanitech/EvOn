@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Mundo de Papel 1D</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            background: #e0e0e0;
+            font-family: sans-serif;
+        }
+
+        canvas {
+            display: block;
+            background: #fff;
+            border: 5px solid #ccc;
+            box-shadow: 10px 10px 0px #bbb;
+            margin: 20px auto;
+        }
+
+        #ui {
+            position: absolute;
+            top: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            text-align: center;
+            pointer-events: none;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div id="ui">
+        <b id="status">Nível: 1 | XP: 0/100</b><br>
+        <small>Use as Setas para mover | Espaço para atacar</small>
+    </div>
+    <canvas id="gameCanvas"></canvas>
+
+    <script>
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = 800;
+        canvas.height = 600;
+
+        // Configurações do Personagem
+        let player = {
+            x: 400, y: 300, size: 20, speed: 4, color: '#3498db',
+            lvl: 1, xp: 0, nextLvl: 100, attackRange: 60
+        };
+
+        let enemies = [];
+        let particles = [];
+
+        // Criar monstros aleatórios
+        function spawnEnemy() {
+            enemies.push({
+                x: Math.random() * canvas.width,
+                y: Math.random() * canvas.height,
+                size: 15,
+                color: '#e74c3c',
+                speed: 1 + Math.random()
+            });
+        }
+
+        // Controles
+        let keys = {};
+        window.onkeydown = (e) => keys[e.code] = true;
+        window.onkeyup = (e) => keys[e.code] = false;
+
+        function update() {
+            // Movimentação em todas as direções
+            if (keys['ArrowUp']) player.y -= player.speed;
+            if (keys['ArrowDown']) player.y += player.speed;
+            if (keys['ArrowLeft']) player.x -= player.speed;
+            if (keys['ArrowRight']) player.x += player.speed;
+
+            // Atacar com Espaço
+            if (keys['Space']) {
+                enemies = enemies.filter(enemy => {
+                    let dist = Math.hypot(player.x - enemy.x, player.y - enemy.y);
+                    if (dist < player.attackRange) {
+                        player.xp += 20;
+                        return false; // Mata o bicho
+                    }
+                    return true;
+                });
+            }
+
+            // Lógica de subir de nível
+            if (player.xp >= player.nextLvl) {
+                player.lvl++;
+                player.xp = 0;
+                player.nextLvl += 50;
+                player.speed += 0.5; // Melhora habilidade
+                player.attackRange += 5;
+                document.body.style.backgroundColor = '#f1c40f'; // Brilho de level up
+                setTimeout(() => document.body.style.backgroundColor = '#e0e0e0', 200);
+            }
+
+            // Inimigos perseguem o jogador
+            enemies.forEach(enemy => {
+                let dx = player.x - enemy.x;
+                let dy = player.y - enemy.y;
+                let angle = Math.atan2(dy, dx);
+                enemy.x += Math.cos(angle) * enemy.speed;
+                enemy.y += Math.sin(angle) * enemy.speed;
+            });
+
+            if (Math.random() < 0.02) spawnEnemy();
+
+            document.getElementById('status').innerText = `Nível: ${player.lvl} | XP: ${player.xp}/${player.nextLvl}`;
+        }
+
+        function draw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Desenha o "Mundo de Papel" (Personagem)
+            ctx.fillStyle = player.color;
+            ctx.fillRect(player.x - player.size / 2, player.y - player.size / 2, player.size, player.size);
+
+            // Raio de Ataque (Efeito visual)
+            if (keys['Space']) {
+                ctx.strokeStyle = 'rgba(52, 152, 219, 0.3)';
+                ctx.beginPath();
+                ctx.arc(player.x, player.y, player.attackRange, 0, Math.PI * 2);
+                ctx.stroke();
+            }
+
+            // Desenha Inimigos
+            enemies.forEach(enemy => {
+                ctx.fillStyle = enemy.color;
+                ctx.beginPath();
+                ctx.arc(enemy.x, enemy.y, enemy.size, 0, Math.PI * 2);
+                ctx.fill();
+            });
+
+            requestAnimationFrame(() => {
+                update();
+                draw();
+            });
+        }
+
+        draw();
+    </script>
+</body>
+
+</html>

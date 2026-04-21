@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Paper World RPG - Teste</title>
+    <link rel="stylesheet" href="paper_rpg.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+    <div id="game-container">
+        <canvas id="gameCanvas"></canvas>
+        
+        <div id="ui-layer">
+            <div class="stat-container">
+                <div class="label">NÍVEL <span id="level-val">1</span></div>
+                <div class="bar-bg xp-bar">
+                    <div id="xp-fill" class="bar-fill" style="width: 0%;"></div>
+                </div>
+            </div>
+            
+            <div class="stat-container">
+                <div class="label">SAÚDE (HP)</div>
+                <div class="bar-bg hp-bar">
+                    <div id="hp-fill" class="bar-fill" style="width: 100%;"></div>
+                </div>
+            </div>
+
+            <div id="skill-menu" class="hidden">
+                <h2>LEVEL UP! Escolha uma Habilidade</h2>
+                <div class="skill-options"></div>
+            </div>
+
+        <div id="game-over-screen" class="hidden">
+            <h1>FIM DE JOGO</h1>
+            <p>Nível Atingido: <span id="final-level">1</span></p>
+            <button onclick="location.reload()">Reiniciar Jogo</button>
+        </div>
+
+        <div id="controls-hint">
+            WASD para mover | Clique para atacar
+        </div>
+    </div>
+
+    <script src="paper_rpg.js"></script>
+</body>
+</html>
